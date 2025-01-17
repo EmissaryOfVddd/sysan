@@ -34,9 +34,9 @@ enum IfType {
 
 fn main() {
     let m = DMatrix::from_columns(&[
-        DVector::from_vec(vec![1., 2., 3.]),
-        DVector::from_vec(vec![1., 2., 3.]),
-        DVector::from_vec(vec![1., 2., 3.]),
+        DVector::from_vec(vec![3., 5., 3.]),
+        DVector::from_vec(vec![4., -3., 2.]),
+        DVector::from_vec(vec![3., 2., 3.]),
     ]);
 
     dbg!(get_results(&m));
@@ -45,7 +45,7 @@ fn main() {
 fn get_results(matrix: &DMatrix<f64>) -> Vec<(Vec<f64>, Vec<f64>)> {
     let mut results = Vec::new();
 
-    for size in 2..=matrix.nrows() {
+    for size in 1..=matrix.nrows() {
         let (matrices, combinations) = extract_submatrices(&matrix, size);
         for (index, _) in matrices.iter().enumerate() {
             let submatrix = &matrices[index];
@@ -62,7 +62,7 @@ fn get_results(matrix: &DMatrix<f64>) -> Vec<(Vec<f64>, Vec<f64>)> {
                 println!("{:?}", inv_submatrix);
             }
 
-            let mut v: f64 = 0.0;
+            let v;
 
             if let Some(temp_v) = get_scalar_v(&inv_submatrix) {
                 v = temp_v;
@@ -95,8 +95,27 @@ fn get_results(matrix: &DMatrix<f64>) -> Vec<(Vec<f64>, Vec<f64>)> {
 
 
 fn debug_info(function: Functions, if_type: IfType, message: &str) -> bool {
-    if DEBUG {
-        println!("{:?} - {:?}: {}", function, if_type, message);
-    }
-    DEBUG
+    if !DEBUG { return false }
+
+    let f = match function {
+        Functions::Main => "MAIN",
+        Functions::Submatrix => "SUBM",
+        Functions::Combinations => "COMB",
+        Functions::SaddlePoints => "SADD",
+        Functions::Scalar => "SCAL",
+        Functions::GetY => "GETY",
+        Functions::GetX => "GETX",
+        Functions::CheckXY => "CHCK",
+    };
+
+    let i = match if_type {
+        IfType::Start => "STRT",
+        IfType::Stop => "STOP",
+        IfType::Info => "INFO",
+        IfType::Warn => "WARN",
+        IfType::EndIteration => "ENDI",
+    };
+
+    println!("[{f}] - [{i}]: {message}");
+    true
 }

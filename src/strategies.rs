@@ -64,10 +64,11 @@ pub fn check_xy(matrix: &DMatrix<f64>, x: &[f64], y: &[f64]) -> bool {
     // Суммы по строкам
     let mut rows_sums: Vec<f64> = Vec::with_capacity(matrix.nrows());
     for row in 0..matrix.nrows() {
-        let temp_row: Vec<f64> = matrix.row(row).iter()
-        .map(|val| *val)
-        .collect(); // Получаем строку в виде вектора
-        let temp_res_row: Vec<f64> = temp_row.iter()
+        // let temp_row: Vec<f64> = matrix.row(row).iter()
+        //     .map(|val| *val)
+        //     .collect(); // Получаем строку в виде вектора
+
+        let temp_res_row: Vec<f64> = matrix.row(row).iter()
             .enumerate()
             .map(|(col, &val)| val * y[col])
             .collect();
@@ -76,18 +77,13 @@ pub fn check_xy(matrix: &DMatrix<f64>, x: &[f64], y: &[f64]) -> bool {
 
     let max_y = *rows_sums.iter().max_by(|a, b| a.partial_cmp(b).unwrap()).unwrap();
 
-    // Транспонирование матрицы
     let transp_matrix = matrix.transpose();
 
     // Суммы по столбцам
-    let mut cols_sums: Vec<f64> = Vec::with_capacity(transp_matrix.nrows());
-    for row in 0..transp_matrix.nrows() {
-        let temp_row: Vec<f64> = transp_matrix.row(row).iter()
-        .map(|val| *val)
-        .collect(); 
-        
+    let mut cols_sums: Vec<f64> = Vec::with_capacity(transp_matrix.ncols());
+    for cols in 0..transp_matrix.ncols() {    
         // Получаем строку в виде вектора
-        let temp_res_row: Vec<f64> = temp_row.iter()
+        let temp_res_row: Vec<f64> = transp_matrix.column(cols).iter()
             .enumerate()
             .map(|(col, &val)| val * x[col])
             .collect();
